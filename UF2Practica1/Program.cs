@@ -28,6 +28,7 @@ namespace UF2Practica1
 			var threads = new List<Thread>();
 			//Recordeu-vos que el fitxer CSV ha d'estar a la carpeta bin/debug de la solució
 			const string fitxer = "CuaClients.csv";
+            int i;
 
 			try
 			{
@@ -56,10 +57,18 @@ namespace UF2Practica1
 			clock.Start();
 
 
-			// Instanciar les caixeres i afegir el thread creat a la llista de threads
+            // Instanciar les caixeres i afegir el thread creat a la llista de threads
 
+            for (i = 0; i < nCaixeres; i++)
+            {
+                var caixera = new Caixera() { idCaixera = i };
 
+                var fil = new Thread(() => caixera.ProcessarCua());
 
+                fil.Start();
+
+                threads.Add(fil);
+            }
 
 			// Procediment per esperar que acabin tots els threads abans d'acabar
 			foreach (Thread thread in threads)
@@ -84,10 +93,24 @@ namespace UF2Practica1
 
 		public void ProcessarCua()
 		{
+          
 			// Llegirem la cua extreient l'element
 			// cridem al mètode ProcesarCompra passant-li el client
 
+            while (!MainClass.cua.IsEmpty)
+            {
+                var client = new Client();
 
+                bool funciona = MainClass.cua.TryDequeue(out client);
+
+                if (funciona)
+                {
+
+                    ProcesarCompra(client);
+
+                }                 
+
+            }
 
 		}
 
